@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mao.mapper.data.SpeciesMapper" >
+
+    <!-- getSpeciesTreeByPid() -->
+    <select id="getSpeciesTreeByPid"
+            parameterType="java.lang.String"
+            resultType="com.mao.entity.species.SpeciesTree">
+      SELECT * FROM tt_species_tree WHERE pid = #{pid}
+    </select>
+
+    <!-- getSpeciesListSrcBySrcId() -->
+    <select id="getSpeciesListSrcBySrcId"
+            parameterType="java.lang.String"
+            resultType="com.mao.entity.species.SpeciesListSrc">
+        SELECT * FROM tt_species_list_src WHERE src_id = #{id}
+    </select>
+
+</mapper>

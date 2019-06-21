@@ -13,7 +13,8 @@ import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
 
 /**
- * 天气获取工具类，
+ * 天气获取工具类
+ * wthrcdn.etouch.cn网站好像只提供api访问
  * @author mao by 14:24 2019/6/18
  */
 public class WeatherUtils {
