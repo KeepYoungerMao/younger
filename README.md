@@ -7,28 +7,32 @@
 ### 1.Mybatis启动问题：
 
     not found [ com.mao ] package
-###### Mybatis需要配置：
-###### 启动类添加注解 
-    @MapperScan("com.mao.mapper") 
-###### 添加完之后会报：
-    not found [ com.mao.mapper ] package
-###### 因为，没发现`mapper`文件路径。添加`mapper`文件夹，启动     
-###### 可能会报错：报错继续往`mapper`文件夹中添加`Mybatis`接口类
-###### 如果还继续报错：在接口类上添加 `@Repository` 注解 （相当于自动注入）
+###### 这只是一个警告，说明你加了Mybatis maven，但Mybatis没有扫描到Mapper文件：
+###### 使用Mybatis方法：
+###### 配置以扫描到Mapper文件：
+    1.Mapper接口添加 @Repository 让 Spring 可以扫描到；
+    2.Mapper接口添加 @Mapper 或者在启动类添加 @MapperScan("com.mao.mapper") 指向 Mapper 文件包，让MyBatis扫描到。
+    3.使用注解SQL的话上述即可使用。
+    4.使用xml SQL的话须在配置文件配置：
+    此mapper文件需建在resource下。如果mapper文件下有二级文件夹，须向我这样配置。
+    mapper-locations: classpath:mapper/**/*Mapper.xml
+    配置实体类包
+    type-aliases-package: com.mao.entity
 
 ***
 
 ### 2.没报错却启动不了问题：
 
-###### 可能原因：自带`tomcat`无法正常启动。
-###### 配置`jetty`服务器就能解决：
+###### 原因：自带`tomcat`无法正常启动。
+###### 去除`spring-boot-starter-tomcat`,spring boot自带tomcat，如果添加此maven，需配置本地tomcat
+###### 配置`jetty`容器也是一个很好的方式：
     <dependency>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-jetty</artifactId>
     </dependency>
 ###### 成功启动后会发现：
     Starting Servlet Engine: Apache Tomcat/9.0.13` 
-###### 他还是启动的tomcat（为啥我也不知道）
+###### 这是`spring boot`自带的`tomcat`
 
 ***
 
