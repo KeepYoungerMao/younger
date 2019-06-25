@@ -1,9 +1,5 @@
 package com.mao.utils;
 
-import sun.misc.BASE64Decoder;
-import sun.misc.BASE64Encoder;
-
-import java.io.IOException;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -79,7 +75,7 @@ public class SU {
      * @return String
      */
     public static String BASE64Encode(byte[] key){
-        return new BASE64Encoder().encodeBuffer(key);
+        return Base64.getEncoder().encodeToString(key);
     }
 
     /**
@@ -88,7 +84,7 @@ public class SU {
      * @return String
      */
     public static String BASE64Encode(String key){
-        return new BASE64Encoder().encodeBuffer(key.getBytes());
+        return Base64.getEncoder().encodeToString(key.getBytes());
     }
 
     /**
@@ -99,8 +95,8 @@ public class SU {
     public static byte[] BASE64Decode(String key){
         byte[] bytes = new byte[0];
         try {
-            bytes = new BASE64Decoder().decodeBuffer(key);
-        }catch (IOException e){
+            bytes = Base64.getDecoder().decode(key);
+        }catch (Exception e){
             e.printStackTrace();
         }
         return bytes;
