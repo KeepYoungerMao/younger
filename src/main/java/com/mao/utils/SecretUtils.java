@@ -4,6 +4,7 @@ import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
+import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 
 /**
@@ -23,19 +24,9 @@ public class SecretUtils {
      */
     public static String encrypt(String data, String key, SecretEnum secretEnum) {
         try {
-            if (SU.isEmpty(data) || SU.isEmpty(key)) {
-                return null;
-            }
-            byte[] content = data.getBytes("UTF-8");
-            KeyGenerator kgen = KeyGenerator.getInstance(secretEnum.getType());
-            SecureRandom secureRandom = SecureRandom.getInstance(ALGORITHM);
-            secureRandom.setSeed(key.getBytes());
-            kgen.init(secretEnum.getStrong(), secureRandom);
-            SecretKey secretKey = kgen.generateKey();
-            byte[] enCodeFormat = secretKey.getEncoded();
-            SecretKeySpec keySpec = new SecretKeySpec(enCodeFormat, secretEnum.getType());
-            Cipher cipher = Cipher.getInstance(secretEnum.getType());// 创建密码器
-            cipher.init(Cipher.ENCRYPT_MODE, keySpec);// 初始化
+            if (SU.isEmpty(data) || SU.isEmpty(key)) return null;
+            byte[] content = data.getBytes(StandardCharsets.UTF_8);
+            Cipher cipher = getCipher(key,secretEnum,Cipher.ENCRYPT_MODE);
             byte[] result = cipher.doFinal(content);
             return parseByte2HexStr(result);
         } catch (Exception e) {
@@ -53,25 +44,29 @@ public class SecretUtils {
      */
     public static String decrypt(String data, String key, SecretEnum secretEnum) {
         try {
-            if (SU.isEmpty(data) || SU.isEmpty(key)) {
-                return null;
-            }
+            if (SU.isEmpty(data) || SU.isEmpty(key)) return null;
             byte[] content = parseHexStr2Byte(data);
-            KeyGenerator kgen = KeyGenerator.getInstance(secretEnum.getType());
-            SecureRandom secureRandom = SecureRandom.getInstance(ALGORITHM);
-            secureRandom.setSeed(key.getBytes());
-            kgen.init(secretEnum.getStrong(), secureRandom);
-            SecretKey secretKey = kgen.generateKey();
-            byte[] enCodeFormat = secretKey.getEncoded();
-            SecretKeySpec keySpec = new SecretKeySpec(enCodeFormat, secretEnum.getType());
-            Cipher cipher = Cipher.getInstance(secretEnum.getType());// 创建密码器
-            cipher.init(Cipher.DECRYPT_MODE, keySpec);// 初始化
+            if (null == content) return null;
+            Cipher cipher = getCipher(key, secretEnum,Cipher.DECRYPT_MODE);
             byte[] result = cipher.doFinal(content);
-            return new String(result, "UTF-8");
+            return new String(result, StandardCharsets.UTF_8);
         } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
+    }
+
+    private static Cipher getCipher(String key, SecretEnum secretEnum, int mode) throws Exception{
+        KeyGenerator k_gen = KeyGenerator.getInstance(secretEnum.getType());
+        SecureRandom secureRandom = SecureRandom.getInstance(ALGORITHM);
+        secureRandom.setSeed(key.getBytes());
+        k_gen.init(secretEnum.getStrong(), secureRandom);
+        SecretKey secretKey = k_gen.generateKey();
+        byte[] enCodeFormat = secretKey.getEncoded();
+        SecretKeySpec keySpec = new SecretKeySpec(enCodeFormat, secretEnum.getType());
+        Cipher cipher = Cipher.getInstance(secretEnum.getType());// 创建密码器
+        cipher.init(mode, keySpec);// 初始化
+        return cipher;
     }
 
     /**
@@ -79,7 +74,7 @@ public class SecretUtils {
      * @param buf 二进制数据
      * @return String
      */
-    private static String parseByte2HexStr(byte buf[]) {
+    private static String parseByte2HexStr(byte[] buf) {
         StringBuilder sb = new StringBuilder();
         for (byte aBuf : buf) {
             String hex = Integer.toHexString(aBuf & 0xFF);
